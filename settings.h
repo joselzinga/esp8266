@@ -2,6 +2,9 @@
 extern const char* ssid     = "SSID";                       // Enter SSID here
 extern const char* password = "wlan-password";               // Wifi password here
 
+//Update Interval
+extern const int UPDATE_INTERVAL_SECONDS = 300;
+
 // Thingspeak Settings
 extern const char* host_ts = "api.thingspeak.com";
 extern const char* THINGSPEAK_API_KEY = "xyzxyzxyzxyz";   // Thingspeak API here

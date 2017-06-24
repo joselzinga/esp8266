@@ -30,8 +30,8 @@
    Begin Settings
  **************************/
 
- // Edit settings.h for appropriate WiFi-settings, Thingspeak API, Domoticz hostname/Sensor-ID and Weather Underground ID/password.
-const int UPDATE_INTERVAL_SECONDS = 300;
+ // Edit settings.h for appropriate WiFi-settings, update interval, Thingspeak API, Domoticz hostname/Sensor-ID and Weather Underground ID/password.
+
  
  
 /***************************
