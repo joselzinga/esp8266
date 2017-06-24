@@ -31,7 +31,9 @@
  **************************/
 
  // Edit settings.h for appropriate WiFi-settings, Thingspeak API, Domoticz hostname/Sensor-ID and Weather Underground ID/password.
-
+const int UPDATE_INTERVAL_SECONDS = 300;
+ 
+ 
 /***************************
    End Settings
  **************************/
@@ -48,8 +50,7 @@
 
 const boolean IS_METRIC = true;
 
-// Update every 600 seconds = 10 minutes. Change your interval here
-const int UPDATE_INTERVAL_SECONDS = 300;
+
 
 DHT dht(DHTPIN, DHTTYPE);
 
