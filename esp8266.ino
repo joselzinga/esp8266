@@ -50,8 +50,6 @@
 
 const boolean IS_METRIC = true;
 
-
-
 DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
@@ -97,8 +95,7 @@ void loop() {
   float dewpointf = (dewpoint * 1.8) + 32;
 
 
-  // Use WiFiClient class to create TCP connections to Thingspeak
-
+  // Use WiFiClient class to create TCP connections to various hosts
   WiFiClient client;
 
   if (client.connect(host_ts, 80) > 0)  {
@@ -138,7 +135,6 @@ void loop() {
                  "User-Agent: ESP8266\r\n"
                  "Connection: close\r\n\r\n");
     delay(100);
-
     client.stop();
     Serial.println("-----------");
     Serial.println(urldom + " sent to " + domoticz);
@@ -147,7 +143,6 @@ void loop() {
 
   // Connect to WU and drop temp + humidity to it (temperature must be in Fahrenheit)
   // see: http://help.wunderground.com/knowledgebase/articles/865575-pws-upload-protocol
-
 
   if (client.connect(hostwu, 80) > 0)   {
     String url2 = "/weatherstation/updateweatherstation.php?ID=";
@@ -168,7 +163,6 @@ void loop() {
                  "Host: " + hostwu + "\r\n" +
                  "Connection: close\r\n\r\n");
     delay(100);
-
     client.stop();
     Serial.println("-----------");
     Serial.println(url2 + " sent to " + hostwu);
