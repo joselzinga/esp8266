@@ -24,6 +24,8 @@
 #include <ESP8266WiFi.h>
 #include "DHT.h"
 #include <U8x8lib.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include "settings.h"
 
 /***************************
@@ -45,6 +47,8 @@ U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(D2, D1, U8X8_PIN_NONE);
 const boolean IS_METRIC = true;
 DHT dht(DHTPIN, DHTTYPE);
 
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "0.nl.pool.ntp.org", 7200);
 
 void setup() {
   // Enabling serialport (115.200 baud-rate)
@@ -110,7 +114,7 @@ void loop() {
   u8x8.print(dewpoint);
   float dewpointf = (dewpoint * 1.8) + 32;
 
-    // Use WiFiClient class to create TCP connections to various hosts
+  // Use WiFiClient class to create TCP connections to various hosts
   WiFiClient client;
 
   if (client.connect(host_ts, 80) > 0)  {
@@ -155,34 +159,41 @@ void loop() {
     Serial.println(urldom + " sent to " + domoticz);
   }
 
- 
-    // Connect to WU and drop temp + humidity to it (temperature must be in Fahrenheit)
-    // see: http://help.wunderground.com/knowledgebase/articles/865575-pws-upload-protocol
+  // Connect to WU and drop temp + humidity to it (temperature must be in Fahrenheit)
+  // see: http://help.wunderground.com/knowledgebase/articles/865575-pws-upload-protocol
 
-    if (client.connect(hostwu, 80) > 0)   {
-      String url2 = "/weatherstation/updateweatherstation.php?ID=";
-      url2 += WUID;
-      url2 += "&PASSWORD=";
-      url2 += WUPASS;
-      url2 += "&dateutc=now";
-      url2 += "&tempf=";
-      url2 += temperaturef;
-      url2 += "&humidity=";
-      url2 += humidity;
-      url2 += "&dewptf=";
-      url2 += dewpointf;
-      url2 += "&softwaretype=ESP8266&action=updateraw";
+  if (client.connect(hostwu, 80) > 0)   {
+    String url2 = "/weatherstation/updateweatherstation.php?ID=";
+    url2 += WUID;
+    url2 += "&PASSWORD=";
+    url2 += WUPASS;
+    url2 += "&dateutc=now";
+    url2 += "&tempf=";
+    url2 += temperaturef;
+    url2 += "&humidity=";
+    url2 += humidity;
+    url2 += "&dewptf=";
+    url2 += dewpointf;
+    url2 += "&softwaretype=ESP8266&action=updateraw";
 
-      // This will send the request to the server
-      client.print(String("GET ") + url2 + " HTTP/1.1\r\n" +
-                   "Host: " + hostwu + "\r\n" +
-                   "Connection: close\r\n\r\n");
-      delay(100);
-      client.stop();
-      Serial.println("-----------");
-      Serial.println(url2 + " sent to " + hostwu);
-    }
- 
+    // This will send the request to the server
+    client.print(String("GET ") + url2 + " HTTP/1.1\r\n" +
+                 "Host: " + hostwu + "\r\n" +
+                 "Connection: close\r\n\r\n");
+    delay(100);
+    client.stop();
+    Serial.println("-----------");
+    Serial.println(url2 + " sent to " + hostwu);
+  }
+
+
+
+  timeClient.begin();
+  timeClient.update();
+  Serial.println(timeClient.getFormattedTime());
+  u8x8.setCursor(0, 5);
+  u8x8.print("Time:");
+  u8x8.print(timeClient.getFormattedTime());
 
   // Go to deep-sleep. To enable this see https://www.losant.com/blog/making-the-esp8266-low-powered-with-deep-sleep
   // For NodeMCU connect D0 (GPIO16) to RST
